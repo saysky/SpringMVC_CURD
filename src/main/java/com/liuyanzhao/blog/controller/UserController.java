@@ -3,7 +3,6 @@ package com.liuyanzhao.blog.controller;
 import com.liuyanzhao.blog.dto.UserDTO;
 import com.liuyanzhao.blog.entity.User;
 import com.liuyanzhao.blog.service.UserService;
-import com.liuyanzhao.blog.util.DBUtil;
 import com.liuyanzhao.blog.vo.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,9 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
