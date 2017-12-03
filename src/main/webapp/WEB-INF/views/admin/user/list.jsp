@@ -35,6 +35,7 @@
                         <a href="${pageContext.request.contextPath}/admin/user/add">
                             <button type="button" class="btn btn-info">添加</button>
                         </a>
+                        <a href="${pageContext.request.contextPath}/admin/user/restoreData"><button type="button" class="btn btn-warning">数据还原</button></a>
                         <button type="button" class="btn btn-danger" onclick="deleteUserMore()">批量删除</button>
                     </form>
                     <br>
