@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+                    http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                    http://www.springframework.org/schema/tx
+                    http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                    http://www.springframework.org/schema/aop
+                    http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                    http://www.springframework.org/schema/cache
+                    http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
+                    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+       default-lazy-init="true">
+
+    <!-- 启动组件扫描，排除@Controller组件，该组件由SpringMVC配置文件扫描 -->
+    <context:component-scan base-package="com.liuyanzhao.blog">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <!-- 属性文件位置 -->
+    <context:property-placeholder location="classpath:jdbc.properties" />
+
+
+    <!-- 数据源 -->
+    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+          destroy-method="close">
+        <!-- 数据库驱动 -->
+        <property name="driverClass" value="${jdbc.driverClassName}" />
+        <!-- 相应驱动的jdbcUrl-->
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <!-- 数据库的用户名 -->
+        <property name="username" value="${jdbc.username}" />
+        <!-- 数据库的密码 -->
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+
+    <!-- JPA实体管理器工厂 -->
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+        <!-- 加入定制化包路径 -->
+        <property name="packagesToScan" value="com.liuyanzhao.blog.entity" />
+
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop><!-- validate/update/create -->
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+
+                <!-- 建表的命名规则 -->
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+
+            </props>
+        </property>
+    </bean>
+
+    <!-- 设置JPA实现厂商的特定属性 -->
+    <bean id="hibernateJpaVendorAdapter"
+          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="databasePlatform" value="${hibernate.dialect}"/>
+    </bean>
+
+    <!-- Jpa 事务配置 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- Spring Data Jpa配置 -->
+    <jpa:repositories base-package="com.liuyanzhao.blog.*"  transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+
+
+</beans>

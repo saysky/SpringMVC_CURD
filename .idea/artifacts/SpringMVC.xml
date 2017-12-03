@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-ear" name="SpringMVC">
+    <output-path>$PROJECT_DIR$/out/artifacts/SpringMVC</output-path>
+    <root id="root" />
+  </artifact>
+</component>

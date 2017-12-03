@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+                http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                http://www.springframework.org/schema/mvc
+                http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd" >
+
+    <!-- 启用SpringMVC的注解功能,它会自动注册HandlerMapping、HandlerAdapter、ExceptionResolver的相关实例 -->
+    <mvc:annotation-driven />
+    <!-- SpringMVC的扫描范围 -->
+    <context:component-scan base-package="com.liuyanzhao.blog.controller" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <!-- 默认访问跳转到登录页面，即定义无Controller的path<->view直接映射
+    <mvc:view-controller path="/" view-name="redirect:/login"/>
+    -->
+
+    <!-- 静态文件访问 -->
+    <!-- <mvc:resources mapping="/resources/**" location="/resources/" /> -->
+
+    <!-- 用于返回json格式 -->
+    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/x-www-form-urlencoded;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list >
+                <ref bean="mappingJacksonHttpMessageConverter" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置SpringMVC的视图解析器 -->
+    <!-- 其viewClass属性的默认值就是org.springframework.web.servlet.view.JstlView -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /> -->
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!-- 总错误处理-->
+    <!--     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+            <property name="defaultErrorView">
+                <value>/base/error</value>
+            </property>
+            <property name="defaultStatusCode">
+                <value>500</value>
+            </property>
+            <property name="warnLogCategory">
+                <value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver</value>
+            </property>
+        </bean> -->
+
+
+    <!--文件上传-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--设置上传最大尺寸为50MB-->
+        <property name="maxUploadSize" value="52428800"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+
+    <!-- 静态资源加载 -->
+    <mvc:resources location="/static/css/" mapping="/css/**" />
+    <mvc:resources location="/static/js/" mapping="/js/**" />
+    <mvc:resources location="/static/images/" mapping="/images/**" />
+    <mvc:resources location="/plugins/" mapping="/plugins/**" />
+
+</beans>
